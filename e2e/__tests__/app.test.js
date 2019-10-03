@@ -1,6 +1,6 @@
 const request = require('../request');
 
-describe('core app api', () => {
+describe('Core App', () => {
   it('is alive', () => {
     return request
       .get('/hello')
