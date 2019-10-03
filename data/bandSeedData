@@ -1,0 +1,17 @@
+const dödsrit = {
+  name: 'Dödsrit',
+  genre: 'Blackened Crust',
+  guitarists: 1,
+  vocals: 'whispers, scream',
+  synths: false,
+  language: 'English'
+};
+
+const cultOfLuna = {
+  name: 'Cult of Luna',
+  genre: 'Doom Metal',
+  guitarists: 3,
+  vocals: 'whispers, clean, bellow, scream',
+  synths: false,
+  language: 'English'
+};
