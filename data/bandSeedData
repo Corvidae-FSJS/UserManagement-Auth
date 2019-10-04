@@ -4,7 +4,7 @@ const dödsrit = {
   guitarists: 1,
   vocals: 'whispers, scream',
   synths: false,
-  language: 'English'
+  language: 'Swedish'
 };
 
 const cultOfLuna = {
