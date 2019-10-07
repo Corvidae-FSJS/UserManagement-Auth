@@ -126,7 +126,6 @@ describe('bands api', () => {
       }, user)
     ])
       .then(() => {
-        console.log(user);
         return request
           .get('/api/bands').expect(200)
           .set('Authorization', user.token)

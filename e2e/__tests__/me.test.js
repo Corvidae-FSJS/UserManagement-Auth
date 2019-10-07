@@ -1,7 +1,6 @@
 const request = require('../request');
 const { dropCollection } = require('../db');
 const { signupUser } = require('../data-helpers');
-const mongoose = require('mongoose');
 
 describe('Band API', () => {
   beforeEach(() => dropCollection('users'));
@@ -9,13 +8,13 @@ describe('Band API', () => {
 
   let user = null;
   beforeEach(() => {
-    return signupUser().then(newUser => (user = newUser));
+    return signupUser().then(newUser => (user = newUser));    
   });
 
   const band = {
     name: 'Dödsrit',
     genre: 'Blackened Crust',
-    owner: new mongoose.Types.ObjectId(),
+    //owner: user._id, not needed because present in post of bands route
     guitarists: 1,
     vocals: 'whispers, screams',
     synths: false,
@@ -23,6 +22,7 @@ describe('Band API', () => {
   };
 
   function postBand(band) {
+    //band.owner = user._id; not needed because present in post of bands route
     return request
       .post('/api/bands')
       .set('Authorization', user.token)
@@ -34,15 +34,25 @@ describe('Band API', () => {
   function putBand(band) {
     return postBand(band)
       .then(band => {
-        return request
+        return request 
           .put(`/api/me/favorites/${band._id}`)
           .set('Authorization', user.token)
           .expect(200)
-          .then(({ body }) => body);
+          .then(() => band);
       });
   }
 
-  it('puts a band in favorites', () => {
+  it('no favorites return empty array', () => { 
+    return request
+      .get('/api/me/favorites')
+      .set('Authorization', user.token)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual([]);
+      });
+  });
+
+  it('updates a band in favorites for user', () => {
     return postBand(band)
       .then(band => {
         return request
@@ -58,24 +68,15 @@ describe('Band API', () => {
 
   it('gets a favorited band', () => {
     return putBand(band)
-      .then(() => {
+      .then((favoritedBand) => {
         return request
-          .get(`/api/me/favorites`)
+          .get('/api/me/favorites')
           .set('Authorization', user.token)
           .expect(200)
           .then(({ body }) => {
-            expect(body[0]).toMatchInlineSnapshot(
-              {
-                _id: expect.any(String)
-              },
-              `
-            Object {
-              "_id": Any<String>,
-              "name": "Dödsrit",
-            }
-          `
-            );
-          });
+            expect(body.length).toBe(1); 
+            expect(body[0]._id).toEqual(favoritedBand._id);
+          }); 
       });
   });
 
@@ -83,7 +84,7 @@ describe('Band API', () => {
     return putBand(band)
       .then(favoritedBand => {
         return request
-          .delete(`/api/me/favorites/${favoritedBand[0]}`)
+          .delete(`/api/me/favorites/${favoritedBand._id}`)
           .set('Authorization', user.token)
           .expect(200)
           .then(() => {
