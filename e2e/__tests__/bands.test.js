@@ -1,15 +1,24 @@
 const request = require('../request');
 const db = require('../db');
 const mongoose = require('mongoose');
-const { signupUser } = require('../data-helpers');
+const { signupUser, signinUser } = require('../data-helpers');
 
 describe('bands api', () => {
   beforeEach(() => db.dropCollection('users'));
   beforeEach(() => db.dropCollection('bands'));
 
+  const testUser = {
+    email: 'me@me.com',
+    password: 'abc'
+  };
+
   let user = null;
   beforeEach(() => {
-    return signupUser().then(newUser => (user = newUser));
+    return signupUser(testUser)
+      .then(() => {
+        return signinUser(testUser)
+          .then(body => user = body);
+      });
   });
 
   const band = {
