@@ -2,7 +2,7 @@ const request = require('../request');
 const { dropCollection } = require('../db');
 const { signupUser, signinUser } = require('../data-helpers');
 
-describe('Band API', () => {
+describe('Bands API', () => {
   beforeEach(() => dropCollection('users'));
   beforeEach(() => dropCollection('bands'));
 
